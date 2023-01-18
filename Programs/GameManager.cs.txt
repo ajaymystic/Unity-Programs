@@ -1,0 +1,77 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+
+public class GameManager : MonoBehaviour
+{
+   // public GameObject lastRoad;
+    public Text Score_txt;
+    public Text bestScore_txt;
+    public int Score;
+    public GameObject gameover;
+    public GameObject pausebtn;
+    public GameObject resumebtn;
+    public GameObject rulespausebtn;
+    public GameObject rulesresumebtn;
+    public void pauseGame()
+    {
+        pausebtn.SetActive(false);
+        rulespausebtn.SetActive(false);
+        bestScore_txt.text = "Best Score : " + PlayerPrefs.GetInt("Score");
+        Score_txt.text = "Current Score : " + Score;
+        gameover.SetActive(true);
+
+    }
+
+    public void resumeGame()
+    {
+        Time.timeScale = 1f;
+        UnityEngine.SceneManagement.SceneManager.LoadScene( UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+    }
+  
+    public void exit()
+    {
+        Application.Quit();
+    }
+    public void loadnextScene(string name)
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(name);
+
+    }
+
+    public void pauseGameScene()
+    {
+        pausebtn.SetActive(false);
+        resumebtn.SetActive(true);
+        Time.timeScale = 0;
+    }
+    public void resumeGame_pause()
+    {
+        pausebtn.SetActive(true);
+        resumebtn.SetActive(false);
+        Time.timeScale = 1;
+    }
+    public void rulespauseGameScene()
+    {
+        rulespausebtn.SetActive(false);
+        rulesresumebtn.SetActive(true);
+        Time.timeScale = 0;
+    }
+    public void rulesresumeGame_pause()
+    {
+        rulespausebtn.SetActive(true);
+        rulesresumebtn.SetActive(false);
+        Time.timeScale = 1;
+    }
+    void OnApplicationFocus(bool hasFocus)
+    {
+        if (!hasFocus)
+        {
+            pauseGameScene();
+        }
+    }
+
+}

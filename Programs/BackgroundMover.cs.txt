@@ -1,0 +1,50 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class BackgroundMover : MonoBehaviour
+{
+    public Chacter _player;
+
+    public float speed = 0.0f;
+
+    public bool isCloud = false;
+    // Update is called once per frame
+    private void Start()
+    {
+        if(isCloud)
+        {
+            speed = UnityEngine.Random.Range(0.1f, 0.3f);
+        }
+    }
+    void Update()
+    {
+        if (!isCloud)
+        {
+            if (_player.rb.velocity.x < 0)
+            {
+                transform.Translate(new Vector3(speed * Time.deltaTime, 0, 0));
+            }
+            else if (_player.rb.velocity.x > 0)
+            {
+                transform.Translate(new Vector3(-1 * speed * Time.deltaTime, 0, 0));
+            }
+            else
+            {
+                if (_player.rb.velocity.x > 0)
+                {
+                    transform.Translate(new Vector3(0, 0, 0));
+                }
+            }
+        }
+        else
+        {
+            transform.Translate(new Vector3(speed * Time.deltaTime, 0, 0));
+            if(transform.position.x>120)
+            {
+                speed = UnityEngine.Random.Range(0.1f, 0.3f);
+                transform.position = new Vector3(-70, transform.position.y, transform.position.z);
+            }
+        }
+    }
+}

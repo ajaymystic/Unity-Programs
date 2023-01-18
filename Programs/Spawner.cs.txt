@@ -1,0 +1,72 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Spawner : MonoBehaviour
+{
+    public static Spawner instance;
+
+    public GameObject[] Fruit;
+    public GameObject Bomb;
+    public GameObject plus_five;
+    public GameObject plus_ten;
+    public GameObject minus_five;
+    public GameObject minus_ten;
+
+
+    private float min_X = -7.4f;
+    private float max_X = 7.4f;
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        StartCoroutine(StartSpawning());
+
+    }
+
+    IEnumerator StartSpawning()
+    {
+        yield return new WaitForSeconds(Random.Range(0.75f, 1.75f));
+
+        int randomfruit = Random.Range(1, Fruit.Length);
+
+        if (Random.value <= .6f)
+            Instantiate(Fruit[randomfruit],
+                new Vector2(Random.Range(min_X, max_X), max_X), Quaternion.identity);
+
+       else if (Random.value <= .2f)
+            Instantiate(plus_five,
+                  new Vector2(Random.Range(min_X, max_X), max_X), Quaternion.identity);
+
+        else if (Random.value <= .2f)
+            Instantiate(plus_ten,
+                new Vector2(Random.Range(min_X, max_X), max_X), Quaternion.identity);
+
+        else if (Random.value <= .1f)
+            Instantiate(minus_five,
+                new Vector2(Random.Range(min_X, max_X), max_X), Quaternion.identity);
+
+        else if (Random.value <= .1f)
+            Instantiate(minus_ten,
+                new Vector2(Random.Range(min_X, max_X), max_X), Quaternion.identity);
+
+        else if (Random.value <= .5f)
+            Instantiate(Bomb,
+                new Vector2(Random.Range(min_X, max_X), max_X), Quaternion.identity);
+
+        StartCoroutine(StartSpawning());
+    }
+
+}

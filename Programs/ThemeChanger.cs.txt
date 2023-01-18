@@ -1,0 +1,33 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class ThemeChanger : MonoBehaviour
+{
+    public bool isthemechanger = false;
+    public Sprite[] _sprite;
+    public Image _themebg;
+    public SpriteRenderer _render;
+    // Start is called before the first frame update
+    void Start()
+    {
+        if(isthemechanger)
+        {
+            if(System.DateTime.Now.Day == 15 && System.DateTime.Now.Month==8)
+            {
+                PlayerPrefs.SetInt("theme", Random.Range(1, _sprite.Length-1));
+            }
+            else
+            {
+                PlayerPrefs.SetInt("theme", 0);
+            }
+        }
+        if(_themebg!=null)
+            _themebg.sprite = _sprite[PlayerPrefs.GetInt("theme")];
+        if(_render!=null)
+            _render.sprite = _sprite[PlayerPrefs.GetInt("theme")];
+    }
+
+
+}

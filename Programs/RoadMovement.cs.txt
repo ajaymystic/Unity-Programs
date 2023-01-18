@@ -1,0 +1,21 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class RoadMovement : MonoBehaviour
+{
+    public GameManager _manager;
+    void Update()
+    {
+        gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(0, -5);
+    }
+    void OnTriggerExit2D(Collider2D other)
+    {
+        //change road place
+        if (other.gameObject.name == "Remove")
+        {
+            gameObject.transform.position = _manager.lastRoad.transform.position + new Vector3(0, 9.5f, 0);
+            _manager.lastRoad = gameObject;
+        }
+    }
+}

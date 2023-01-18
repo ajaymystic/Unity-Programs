@@ -1,0 +1,213 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class Chacter : MonoBehaviour
+{
+	public float Playerspeed;
+
+	Vector3 position;
+	bool currntPlatformAndroid = false;
+	public Rigidbody2D rb;
+	public Text timer_Text;
+	public Text score_txt;
+	private int timer = 120;
+	public int Score = 0;
+	public GameManager _manager;
+	public GameObject temp_display;
+	int m = 0;
+	int s = 0;
+
+	void Awake()
+	{
+		rb = GetComponent<Rigidbody2D>();
+#if UNITY_ANDROID
+		currntPlatformAndroid = true;
+#else
+		currntPlatformAndroid=false;
+#endif
+	}
+
+	// Use this for initialization
+	void Start()
+	{
+		Time.timeScale = 1f;
+		StartCoroutine(CountTime());
+		Score = 0;
+		position = transform.position;
+		if (currntPlatformAndroid == true)
+		{
+			Debug.Log("Android");
+		}
+		else
+		{
+			Debug.Log("Windows");
+		}
+	}
+
+	// Update is called once per frame
+	void Update()
+	{
+		if (currntPlatformAndroid == true)
+		{
+			//android specific code
+		}
+		else
+		{
+			if (Input.GetKey(KeyCode.UpArrow))
+			{
+				GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, Playerspeed);
+
+			}
+			if (Input.GetKey(KeyCode.RightArrow))
+			{
+				GetComponent<Rigidbody2D>().velocity = new Vector2(Playerspeed, GetComponent<Rigidbody2D>().velocity.y);
+
+			}
+			if (Input.GetKey(KeyCode.LeftArrow))
+			{
+				GetComponent<Rigidbody2D>().velocity = new Vector2(-Playerspeed, GetComponent<Rigidbody2D>().velocity.y);
+
+			}
+		}
+		score_txt.text = "Score : " + Score;
+		m = timer / 60;
+		s = timer % 60;
+		if (s < 10)
+		{
+			timer_Text.text = "Time Left :" + m+":0"+s;
+		}
+		else
+        {
+			timer_Text.text = "Time Left :" + m + ":" + s;
+		}
+	}
+	public void Right()
+	{
+		rb.velocity = new Vector2(-Playerspeed, 0);
+
+	}
+	public void Left()
+	{
+		rb.velocity = new Vector2(Playerspeed, 0);
+	}
+	public void SetVelocityZero()
+	{
+		rb.velocity = Vector2.zero;
+	}
+
+	IEnumerator CountTime()
+
+	{
+		yield return new WaitForSeconds(1f);
+		timer--;
+		if (timer > 0)
+		{
+			StartCoroutine(CountTime());
+		}
+		else
+        {
+			Time.timeScale = 0f;
+			if (PlayerPrefs.GetInt("Score") < Score)
+			{
+				PlayerPrefs.SetInt("Score", Score);
+			}
+			_manager.Score = Score;
+			List<int> hs = new List<int>();
+			for (int i = 0; i < 5; i++)
+			{
+				hs.Add(PlayerPrefs.GetInt("highScore" + i));
+			}
+			hs.Add(Score);
+			for(int i=0;i<hs.Count;i++)
+            {
+				for(int j=i+1;j<hs.Count;j++)
+                {
+					if(hs[j]>hs[i])
+                    {
+						int temp = hs[i];
+						hs[i] = hs[j];
+						hs[j] = temp;
+                    }
+                }
+            }
+			for (int i = 0; i < 5; i++)
+			{
+				PlayerPrefs.SetInt("highScore" + i,hs[i]);
+			}
+			_manager.pauseGame();
+		}
+	}
+	IEnumerator RestartGame()
+	{
+		yield return new WaitForSecondsRealtime(2f);
+
+		UnityEngine.SceneManagement.SceneManager.LoadScene(
+			UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+
+	}
+	void OnTriggerEnter2D(UnityEngine.Collider2D other)
+	{
+
+		if (other.tag == "Bomb")
+		{
+			GameObject.Find("Sound").GetComponent<Sound>().hit.Play();
+			GameObject obj = Instantiate(temp_display) as GameObject;
+			obj.transform.position = other.gameObject.transform.position;
+			//obj.GetComponent<ScoreEffect>()._scoretxt.text = "-20 Sec";
+			Destroy(other.gameObject);
+			timer -= 20;
+		}
+		if (other.tag == "Fruit")
+		{
+			GameObject.Find("Sound").GetComponent<Sound>().collect.Play();
+			GameObject obj = Instantiate(temp_display) as GameObject;
+			obj.transform.position = other.gameObject.transform.position;
+			//obj.GetComponent<ScoreEffect>()._scoretxt.text = "+1";
+			Destroy(other.gameObject);
+			Score += 1;
+		}
+		if (other.tag == "Five_sec")
+		{
+			GameObject.Find("Sound").GetComponent<Sound>().collect.Play();
+			GameObject obj = Instantiate(temp_display) as GameObject;
+			obj.transform.position = other.gameObject.transform.position;
+			//obj.GetComponent<ScoreEffect>()._scoretxt.text = "+5 Sec";
+			Destroy(other.gameObject);
+			timer += 5;
+		}
+		if (other.tag == "ten_sec")
+		{
+			GameObject.Find("Sound").GetComponent<Sound>().collect.Play();
+			GameObject obj = Instantiate(temp_display) as GameObject;
+			obj.transform.position = other.gameObject.transform.position;
+			//obj.GetComponent<ScoreEffect>()._scoretxt.text = "+10 Sec";
+			Destroy(other.gameObject);
+			timer += 10;
+		}
+		if (other.tag == "mines_five_sec")
+		{
+			GameObject.Find("Sound").GetComponent<Sound>().hit.Play();
+			GameObject obj = Instantiate(temp_display) as GameObject;
+			obj.transform.position = other.gameObject.transform.position;
+			//obj.GetComponent<ScoreEffect>()._scoretxt.text = "-5 LOL";
+			Destroy(other.gameObject);
+			timer -= 5;
+		}
+		if (other.tag == "mines_ten_sec")
+		{
+			GameObject.Find("Sound").GetComponent<Sound>().hit.Play();
+			GameObject obj = Instantiate(temp_display) as GameObject;
+			obj.transform.position = other.gameObject.transform.position;
+			//obj.GetComponent<ScoreEffect>()._scoretxt.text = "-10 LOL";
+			Destroy(other.gameObject);
+			timer -= 10;
+		}
+
+	}
+	
+}
+ 
+  
+
